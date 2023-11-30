@@ -15,23 +15,26 @@ def bag_of_words_matrix(sentences: List[str]) -> npt.ArrayLike:
     word_counts = {word: words.count(word) for word in set(words)}
 
     # Identify words occurring at least 2 times
-    frequent_words = {word for word, count in word_counts.items() if count >= 2}
+    frequent_words = {word for word,
+                      count in word_counts.items() if count >= 2}
 
     # Create the vocabulary including the token <UNK>
     vocabulary = list(frequent_words) + ['<UNK>']
 
     # Initialize the matrix with zeros
-    matrix = np.zeros((len(sentences), len(vocabulary)))
+    matrix = np.zeros((len(vocabulary), len(sentences)))
+
+    # print(matrix)
 
     # Populate the matrix
-    for i, sentence in enumerate(sentences):
+    for idx, sentence in enumerate(sentences):
         for word in sentence.split():
-            # If word is found, we change the value to 1
+            # If word is found, we add by 1
             if word in vocabulary:
-                matrix[i, vocabulary.index(word)] = 1
+                matrix[vocabulary.index(word), idx] += 1
             # else, we identify that an unknown word was found
             else:
-                matrix[i, vocabulary.index('<UNK>')] = 1
+                matrix[vocabulary.index('<UNK>'), idx] += 1
 
     return matrix
     #########################################################################
@@ -46,14 +49,16 @@ def labels_matrix(data: Tuple[List[str], Set[str]]) -> npt.ArrayLike:
     sentences, unique_labels = zip(*data)
 
     # Convert unique_labels to a list for indexing
-    unique_labels = list(unique_labels)
+    unique_labels = list(set(unique_labels))
 
     # Initialize the matrix with zeros
-    matrix = np.zeros((len(sentences), len(unique_labels)))
+    matrix = np.zeros((len(unique_labels), len(sentences)))
 
     # Populate the matrix
     for idx, (sentence, label) in enumerate(data):
-        matrix[idx, unique_labels.index(label)] = 1
+        matrix[unique_labels.index(label), idx] += 1
+
+    print(relu_prime(softmax(matrix)))
 
     return matrix
     #########################################################################
@@ -65,7 +70,11 @@ def softmax(z: npt.ArrayLike) -> npt.ArrayLike:
     """
     ############################# STUDENT SOLUTION ##########################
     # YOUR CODE HERE
-    return None
+    exp_z = np.exp(z)
+    sum_exp_z = np.sum(exp_z)
+    softmax = exp_z / sum_exp_z
+
+    return softmax
     #########################################################################
 
 
@@ -75,7 +84,10 @@ def relu(z: npt.ArrayLike) -> npt.ArrayLike:
     """
     ############################# STUDENT SOLUTION ##########################
     # YOUR CODE HERE
-    return None
+
+    relu = np.maximum(0, z)
+
+    return relu
     #########################################################################
 
 
@@ -85,5 +97,8 @@ def relu_prime(z: npt.ArrayLike) -> npt.ArrayLike:
     """
     ############################# STUDENT SOLUTION ##########################
     # YOUR CODE HERE
-    return None
+
+    relu_prime = np.where(z >= 0 , 1, 0)
+
+    return relu_prime
     #########################################################################
