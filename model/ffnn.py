@@ -22,6 +22,10 @@ class NeuralNetwork(object):
         #         1) Set a seed so that your model is reproducible
         #         2) Initialize weight matrices and biases with uniform
         #         distribution in the range (-1, 1).
+        print(input_size, hidden_size, num_classes, seed)
+
+        np.random.seed(42)
+
         pass
         ###################################################################
 

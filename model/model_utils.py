@@ -58,8 +58,6 @@ def labels_matrix(data: Tuple[List[str], Set[str]]) -> npt.ArrayLike:
     for idx, (sentence, label) in enumerate(data):
         matrix[unique_labels.index(label), idx] += 1
 
-    print(relu_prime(softmax(matrix)))
-
     return matrix
     #########################################################################
 
