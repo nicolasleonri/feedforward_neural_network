@@ -16,7 +16,7 @@ def bag_of_words_matrix(sentences: List[str]) -> npt.ArrayLike:
 
     # Identify words occurring at least 2 times
     frequent_words = {word for word,
-                      count in word_counts.items() if count >= 2}
+                      count in word_counts.items() if count > 2}
 
     # Create the vocabulary including the token <UNK>
     vocabulary = list(frequent_words) + ['<UNK>']
@@ -57,6 +57,9 @@ def labels_matrix(data: Tuple[List[str], Set[str]]) -> npt.ArrayLike:
     # Populate the matrix
     for idx, (sentence, label) in enumerate(data):
         matrix[unique_labels.index(label), idx] += 1
+
+    #multiple_ones_in_column = np.sum(matrix, axis=0) > 1
+    #print(multiple_ones_in_column)
 
     return matrix
     #########################################################################

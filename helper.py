@@ -1,4 +1,5 @@
 from model.ffnn import NeuralNetwork, compute_loss
+import numpy as np
 
 
 def batch_train(X, Y, model, train_flag=False):
@@ -14,8 +15,25 @@ def batch_train(X, Y, model, train_flag=False):
     #         intent and calculate the accuracy of the classifier
     #         3) Then, plot the cost function for each iteration and
     #         compare the results after training with results before training
-    pass
+
+    # Use your neural network to predict the intent
+
+    def calculate_accuracy(Y_true, Y_predicted):
+        """
+        Calculate accuracy given true labels and predicted labels.
+        """
+        correct_predictions = np.sum(np.all(Y_true == Y_predicted, axis=0))
+        total_samples = Y_true.shape[1]
+        accuracy = correct_predictions / total_samples
+        return accuracy
+
+    Y_predicted_before_training = model.predict(X)
+    accuracy_before_training = calculate_accuracy(Y, Y_predicted_before_training)
+
+    print(compute_loss(Y_predicted_before_training, Y))
+
     if train_flag:
+        print("Test")
         pass
     ###############################################################################
 

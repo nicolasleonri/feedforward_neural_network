@@ -39,7 +39,7 @@ def main():
     X = bag_of_words_matrix(sentences)
     Y = labels_matrix(tuple(zip(sentences, intent)))
 
-    model = NeuralNetwork(1, 1, len(unique_intent), 1)
+    model = NeuralNetwork(X.shape[0], 150, len(unique_intent), 42)
     ##################################################################
 
     if not args.minibatch:

@@ -22,9 +22,15 @@ class NeuralNetwork(object):
         #         1) Set a seed so that your model is reproducible
         #         2) Initialize weight matrices and biases with uniform
         #         distribution in the range (-1, 1).
-        print(input_size, hidden_size, num_classes, seed)
+        np.random.seed(seed)
 
-        np.random.seed(42)
+        # Create weight and bias matrix W (see Figure 7.10)
+        self.W = np.random.uniform(-1, +1, size=(hidden_size, input_size+1))
+        # Add bias as element x0 = 1
+        self.W[:, 0] = 1
+
+        # Create weight matrix U to store results (see Figure 7.10)
+        self.U = np.random.uniform(-1, +1, size=(num_classes, hidden_size))
 
         pass
         ###################################################################
@@ -38,7 +44,19 @@ class NeuralNetwork(object):
         # YOUR CODE HERE
         #     TODO:
         #         1) Perform only a forward pass with X as input.
-        pass
+
+        # Add bias term to input
+        a0 = np.insert(X, 0, 1, axis=0)
+
+        # Forward pass through the hidden layer with ReLU activation
+        z_hidden = np.dot(self.W, a0)
+        a_hidden = relu(z_hidden)
+
+        # Forward pass through the output layer with softmax activation
+        z_output = np.dot(self.U, a_hidden)
+        Y_hat = softmax(z_output)
+
+        return Y_hat
         #####################################################################
 
     def predict(self, X: npt.ArrayLike) -> npt.ArrayLike:
@@ -52,7 +70,20 @@ class NeuralNetwork(object):
         #         `self.forward()` function. The shape of prediction matrix
         #         should be similar to label matrix produced with
         #         `labels_matrix()`
-        pass
+
+        # Perform a forward pass to get predictions
+        Y_hat = self.forward(X)
+
+        Y_predict = np.zeros_like(Y_hat)
+
+        for col_idx in range(Y_hat.shape[1]):
+            max_index = np.argmax(Y_hat[:, col_idx])
+            Y_predict[max_index, col_idx] = 1
+        
+        #multiple_ones_in_column = np.sum(Y_predict, axis=0) > 1
+        #print(multiple_ones_in_column)
+
+        return Y_predict
         ######################################################################
 
     def backward(
@@ -82,5 +113,18 @@ def compute_loss(pred: npt.ArrayLike, truth: npt.ArrayLike) -> float:
     #     TODO:
     #         1) Compute the cross entropy loss between your model prediction
     #         and the ground truth.
-    pass
+
+    # Get the number of samples
+    num_samples = pred.shape[1]
+
+    # Extract the correct class indices
+    correct_class_indices = truth.argmax(axis=0)
+
+    # Extract the raw scores (logits) for the correct class
+    z_c = pred[correct_class_indices, np.arange(num_samples)]
+
+    # Compute the cross-entropy loss using the specified formula
+    loss = -np.sum(np.log(np.exp(z_c) / np.sum(np.exp(pred), axis=0))) / num_samples
+
+    return loss
     #######################################################################
