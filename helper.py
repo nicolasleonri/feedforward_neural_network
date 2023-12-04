@@ -1,8 +1,20 @@
 from model.ffnn import NeuralNetwork, compute_loss
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def batch_train(X, Y, model, train_flag=False):
+    """
+    Train the neural network using batch gradient descent and plot the loss.
+
+    Args:
+    - X (npt.ArrayLike): Input data.
+    - Y (npt.ArrayLike): Ground truth labels.
+    - model (NeuralNetwork): Neural network model.
+    - train_flag (bool): If True, perform training and plot the loss.
+
+    Returns:
+    - None
+    """
     ################################# STUDENT SOLUTION #############################
     # YOUR CODE HERE
     #     TODO:
@@ -16,8 +28,6 @@ def batch_train(X, Y, model, train_flag=False):
     #         3) Then, plot the cost function for each iteration and
     #         compare the results after training with results before training
 
-    # Use your neural network to predict the intent
-
     def calculate_accuracy(Y_true, Y_predicted):
         """
         Calculate accuracy given true labels and predicted labels.
@@ -27,14 +37,49 @@ def batch_train(X, Y, model, train_flag=False):
         accuracy = correct_predictions / total_samples
         return accuracy
 
+    # Use neural network to predict the intent (without any training)
+    # and calculate the accuracy of the classifier
     Y_predicted_before_training = model.predict(X)
-    accuracy_before_training = calculate_accuracy(Y, Y_predicted_before_training)
 
-    print(compute_loss(Y_predicted_before_training, Y))
+    print("Accuracy without training:", calculate_accuracy(Y, Y_predicted_before_training))
+    print("Loss without training:", compute_loss(Y_predicted_before_training, Y))
 
+    # if train_flag is true, run the training for 1000 epochs using 
+    # learning rate = 0.005 
     if train_flag:
-        print("Test")
-        pass
+        epochs = 1000
+        learning_rate = 0.005
+        losses = []
+
+        # Iterate through training epochs
+        for epoch in range(epochs):
+            print("Epoch:", epoch)
+            # Initialize gradient accumulators for each epoch
+            grad_accumulator_W = 0
+            grad_accumulator_U = 0
+            loss_accumulator = 0
+
+            # Iterate through the training dataset
+            for example in range(X.shape[1]):
+                # Get a single example
+                x_example = X[:, example]
+                y_example = Y[:, example]
+
+                # Perform forward pass
+                Y_hat_example = model.forward(x_example)
+
+                # Compute cross-entropy loss for the example
+                loss_example = compute_loss(Y_hat_example, y_example)
+                # Accumulate the loss
+                loss_accumulator += loss_example
+
+                # Perform backward pass to compute gradients
+                model.backward(x_example, y_example)
+                
+    # Use this neural network to predict the 
+    # intent and calculate the accuracy of the classifier
+
+    return None
     ###############################################################################
 
 
