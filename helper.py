@@ -55,8 +55,8 @@ def batch_train(X, Y, model, train_flag=False):
         for epoch in range(epochs):
             print("Epoch:", epoch)
             # Initialize gradient accumulators for each epoch
-            grad_accumulator_W = 0
-            grad_accumulator_U = 0
+            grad_W_accumulator = np.zeros_like(model.W)
+            grad_U_accumulator = 0
             loss_accumulator = 0
 
             # Iterate through the training dataset
@@ -74,10 +74,36 @@ def batch_train(X, Y, model, train_flag=False):
                 loss_accumulator += loss_example
 
                 # Perform backward pass to compute gradients
-                model.backward(x_example, y_example)
+                grad_U_example, grad_W_example = model.backward(x_example, y_example)
+
+                # Accumulate the gradients
+                grad_W_accumulator += grad_W_example
+                grad_U_accumulator += grad_U_example
+
+            # Average the gradients and loss over the entire dataset
+            avg_grad_W = grad_W_accumulator / X.shape[1]
+            avg_grad_U = grad_U_accumulator / X.shape[1]
+            avg_loss = loss_accumulator / X.shape[1]
+
+            # Update weights and biases using the averaged gradients
+            model.W -= learning_rate * avg_grad_W
+            model.U -= learning_rate * avg_grad_U
+        
+            # Append the average loss to the list for plotting
+            losses.append(avg_loss)
+        print(losses)
+
+    # Plot the cost function for each iteration
+    plt.plot(range(epochs), losses)
+    plt.xlabel('Epoch')
+    plt.ylabel('Average Loss')
+    plt.title('Training Progress')
+    plt.show()
                 
-    # Use this neural network to predict the 
-    # intent and calculate the accuracy of the classifier
+    Y_predicted_after_training = model.predict(X)
+
+    print("Accuracy with training:", calculate_accuracy(Y, Y_predicted_after_training))
+    print("Loss with training:", compute_loss(Y_predicted_after_training, Y))
 
     return None
     ###############################################################################

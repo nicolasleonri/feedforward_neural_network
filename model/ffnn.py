@@ -119,13 +119,20 @@ class NeuralNetwork(object):
         # Compute the cross-entropy loss gradient at the output layer
         delta_output = Y_hat - Y
 
+        # Compute gradients for the output layer
+        grad_U = np.dot(delta_output, Y_hat.T)
+
+        # Compute delta for the hidden layer using the chain rule
+        delta_hidden = np.dot(self.U.T, delta_output) * relu_prime(a_hidden)
+
+        # Compute gradients for the hidden layer
+        grad_W = np.dot(delta_hidden.reshape(-1, 1), a0.reshape(1, -1))
+
         #TODO: apply to hidden layer, calculate error term and compute gradient
         #Then update weight and compute again
 
-        
-
-
-        return None
+    
+        return grad_U, grad_W
         #######################################################################
 
 
