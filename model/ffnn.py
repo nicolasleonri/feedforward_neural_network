@@ -33,7 +33,6 @@ class NeuralNetwork(object):
         # Add bias as element x0 = 1
         self.W[:, 0] = 1
 
-
         # Create weight matrix U to store results (see Figure 7.10)
         self.U = np.random.uniform(-1, +1, size=(num_classes, hidden_size))
         ###################################################################
@@ -96,15 +95,21 @@ class NeuralNetwork(object):
         Y: npt.ArrayLike
     ) -> Tuple[npt.ArrayLike, npt.ArrayLike, npt.ArrayLike, npt.ArrayLike]:
         """
-        Backpropagation algorithm.
+        Backpropagation algorithm to compute gradients for weight matrices and biases.
+
+        Args:
+        - X (npt.ArrayLike): Input data for a single example.
+        - Y (npt.ArrayLike): Ground truth labels for a single example.
+
+        Returns:
+        Tuple[npt.ArrayLike, npt.ArrayLike, npt.ArrayLike, npt.ArrayLike]:
+            A tuple containing the gradients for weight matrices and biases:
+            - grad_U (npt.ArrayLike): Gradient for the output layer weights.
+            - grad_W (npt.ArrayLike): Gradient for the hidden layer weights.
+            - delta_output (npt.ArrayLike): Error term for the output layer.
+            - delta_hidden (npt.ArrayLike): Error term for the hidden layer.
         """
         ########################## STUDENT SOLUTION ###########################
-        # YOUR CODE HERE
-        #     TODO:
-        #         1) Perform forward pass, then backpropagation
-        #         to get gradient for weight matrices and biases
-        #         2) Return the gradient for weight matrices and biases
-
         # Add bias term to input
         a0 = np.insert(X, 0, 1, axis=0)
 
@@ -127,12 +132,8 @@ class NeuralNetwork(object):
 
         # Compute gradients for the hidden layer
         grad_W = np.dot(delta_hidden.reshape(-1, 1), a0.reshape(1, -1))
-
-        #TODO: apply to hidden layer, calculate error term and compute gradient
-        #Then update weight and compute again
-
     
-        return grad_U, grad_W
+        return grad_U, grad_W, delta_output, delta_hidden
         #######################################################################
 
 
