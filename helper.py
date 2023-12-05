@@ -85,16 +85,16 @@ def batch_train(X, Y, model, train_flag=False):
             if epoch % 100 == 0:
                 print(f"Epoch {epoch}/{epochs} - Loss: {avg_loss}")
 
-    # Predict after training          
-    Y_predicted_after_training = model.predict(X)
-    print("Accuracy with training:", calculate_accuracy(Y, Y_predicted_after_training))
+        # Predict after training          
+        Y_predicted_after_training = model.predict(X)
+        print("Accuracy with training:", calculate_accuracy(Y, Y_predicted_after_training))
 
-    # Plot the cost function for each iteration
-    plt.plot(range(epochs), losses)
-    plt.xlabel('Epoch')
-    plt.ylabel('Average Loss')
-    plt.title('Training Progress')
-    plt.show()
+        # Plot the cost function for each iteration
+        plt.plot(range(epochs), losses)
+        plt.xlabel('Epoch')
+        plt.ylabel('Average Loss')
+        plt.title('Training Progress')
+        plt.show()
 
     return None
     ###############################################################################
