@@ -2,7 +2,7 @@ from model.ffnn import NeuralNetwork, compute_loss
 import numpy as np
 import matplotlib.pyplot as plt
 from model.model_utils import bag_of_words_matrix, labels_matrix
-
+import copy
 
 
 def batch_train(X, Y, model, train_flag=False):
@@ -145,8 +145,8 @@ def minibatch_train(X, Y, model, train_flag=False):
         return accuracy
     
     # Make a copy of the original X and Y to be reused after training with different batch sizes
-    copied_X = X
-    copied_Y = Y
+    copied_X = copy.deepcopy(X)
+    copied_Y = copy.deepcopy(Y)
 
     epochs = 1000
     learning_rate = 0.005
@@ -156,6 +156,7 @@ def minibatch_train(X, Y, model, train_flag=False):
     line_styles = ['-', '--']  # Use different line styles for each batch size
 
     for batch_size in batch_list:
+
         print(f"Testing on batch size {batch_size}...")
 
         # Predict before training
@@ -237,8 +238,8 @@ def minibatch_train(X, Y, model, train_flag=False):
             Y, Y_predicted_after_training))
         
         # Reinitialize X and Y for the next batch size
-        X = copied_X
-        Y = copied_Y
+        X = copy.deepcopy(copied_X)
+        Y = copy.deepcopy(copied_Y)
         
     # Plot the cost function for each iteration with different line styles/colors
     for idx, batch_size in enumerate(batch_list):

@@ -72,10 +72,11 @@ def main():
     Also, we haven't calculated a F1-score. In order to improve the model, we should
     implement these aspects.
 
-    (4.5) In mini-batch gradient descent, the dataset is divided into smaller batches (in 
-    this case, a batch size of 64). The model parameters are updated based on the average 
-    gradient computed from each batch. This approach combines some benefits of both 
-    stochastic gradient descent and batch gradient descent.
+    (4.5) See file "Figure_minibatch().png". In mini-batch gradient descent, the dataset 
+    is divided into smaller batches (in this case, a batch size of 64). The model 
+    parameters are updated based on the average gradient computed from each batch. 
+    This approach combines some benefits of both stochastic gradient descent and 
+    batch gradient descent.
 
     When compard to stochastic gradient descent, we get a smoother convergence. The 
     averaging effect of the gradients from multiple examples in each batch helps reduce 
