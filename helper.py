@@ -1,6 +1,9 @@
 from model.ffnn import NeuralNetwork, compute_loss
 import numpy as np
 import matplotlib.pyplot as plt
+from model.model_utils import bag_of_words_matrix, labels_matrix
+
+
 
 def batch_train(X, Y, model, train_flag=False):
     """
@@ -33,13 +36,15 @@ def batch_train(X, Y, model, train_flag=False):
 
     # Predict before training
     Y_predicted_before_training = model.predict(X)
-    print("Accuracy without training:", calculate_accuracy(Y, Y_predicted_before_training))
+    print("Accuracy without training:", calculate_accuracy(
+        Y, Y_predicted_before_training))
 
     # Train the neural network if train_flag is True
     if train_flag:
         epochs = 1000
         learning_rate = 0.005
         losses = []
+        accuracy = []
 
         # Iterate through training epochs
         for epoch in range(epochs):
@@ -63,7 +68,8 @@ def batch_train(X, Y, model, train_flag=False):
                 loss_accumulator += loss_example
 
                 # Perform backward pass to compute gradients
-                grad_U_example, grad_W_example,_ ,_ = model.backward(x_example, y_example)
+                grad_U_example, grad_W_example, _, _ = model.backward(
+                    x_example, y_example)
 
                 # Accumulate the gradients
                 grad_W_accumulator += grad_W_example
@@ -77,17 +83,24 @@ def batch_train(X, Y, model, train_flag=False):
             # Update weights and biases using the averaged gradients
             model.W -= learning_rate * avg_grad_W
             model.U -= learning_rate * avg_grad_U
-        
+
             # Append the average loss to the list for plotting
             losses.append(avg_loss)
+            last_accuracy = calculate_accuracy(Y, model.predict(X))
+            accuracy.append(last_accuracy)
 
             # Print progress every 100 epochs
             if epoch % 100 == 0:
-                print(f"Epoch {epoch}/{epochs} - Loss: {avg_loss}")
+                print(
+                    f"Epoch {epoch}/{epochs} - Loss: {avg_loss} - Accuracy: {last_accuracy}")
+            elif epoch == 999:
+                print(
+                    f"Epoch 1000/1000 - Loss: {avg_loss} - Accuracy: {last_accuracy}")
 
-        # Predict after training          
+        # Predict after training
         Y_predicted_after_training = model.predict(X)
-        print("Accuracy with training:", calculate_accuracy(Y, Y_predicted_after_training))
+        print("Accuracy with training:", calculate_accuracy(
+            Y, Y_predicted_after_training))
 
         # Plot the cost function for each iteration
         plt.plot(range(epochs), losses)
@@ -96,17 +109,24 @@ def batch_train(X, Y, model, train_flag=False):
         plt.title('Training Progress')
         plt.show()
 
-    return None
+        return None
     ###############################################################################
 
 
 def minibatch_train(X, Y, model, train_flag=False):
     ########################## STUDENT SOLUTION #############################
-    # YOUR CODE HERE
-    #     TODO:
-    #         1) As bonus, train your neural network with batch size = 64
-    #         and SGD (batch size = 1) for 1000 epochs using learning rate
-    #         = 0.005. Then, plot the cost vs iteration for both cases.
+    """
+    Trains a neural network using mini-batch gradient descent with different batch sizes.
+    
+    Parameters:
+    - X (np.ndarray): Input data.
+    - Y (np.ndarray): Ground truth labels.
+    - model: Neural network model.
+    - train_flag (bool, optional): Flag indicating whether training is enabled. Default is False.
+    
+    Returns:
+    - None
+    """
 
     def calculate_accuracy(Y_true, Y_predicted):
         """
@@ -123,16 +143,24 @@ def minibatch_train(X, Y, model, train_flag=False):
         total_samples = Y_true.shape[1]
         accuracy = correct_predictions / total_samples
         return accuracy
+    
+    # Make a copy of the original X and Y to be reused after training with different batch sizes
+    copied_X = X
+    copied_Y = Y
 
-    # Predict before training
-    Y_predicted_before_training = model.predict(X)
-    print("Accuracy without training:", calculate_accuracy(Y, Y_predicted_before_training))
+    epochs = 1000
+    learning_rate = 0.005
+    losses = {64: [], 1: []}
+    accuracy = []
+    batch_list = [64, 1]
+    line_styles = ['-', '--']  # Use different line styles for each batch size
 
-    if train_flag:
-        epochs = 1000
-        learning_rate = 0.005
-        losses = []
-        batch_size = 64
+    for batch_size in batch_list:
+        print(f"Testing on batch size {batch_size}...")
+
+        # Predict before training
+        print(f"Accuracy without training (batch: {batch_size}):", calculate_accuracy(
+        Y, model.predict(X)))
 
         for epoch in range(epochs):
             grad_W_accumulator = np.zeros_like(model.W)
@@ -165,7 +193,8 @@ def minibatch_train(X, Y, model, train_flag=False):
                     loss_example = compute_loss(Y_hat_example, y_example)
                     loss_batch += loss_example
 
-                    grad_U_example, grad_W_example, _, _ = model.backward(x_example, y_example)
+                    grad_U_example, grad_W_example, _, _ = model.backward(
+                        x_example, y_example)
 
                     grad_W_batch += grad_W_example
                     grad_U_batch += grad_U_example
@@ -190,23 +219,37 @@ def minibatch_train(X, Y, model, train_flag=False):
             model.U -= learning_rate * avg_grad_U
 
             # Append the average loss to the list for plotting
-            losses.append(avg_loss)
+            losses[batch_size].append(avg_loss)
+            last_accuracy = calculate_accuracy(Y, model.predict(X))
+            accuracy.append(last_accuracy)
 
             # Print progress every 100 epochs
             if epoch % 100 == 0:
-                print(f"Epoch {epoch}/{epochs} - Loss: {avg_loss}")
+                print(
+                    f"Epoch {epoch}/{epochs} - Loss: {avg_loss} - Accuracy: {last_accuracy}")
+            elif epoch == 999:
+                print(
+                    f"Epoch 1000/1000 - Loss: {avg_loss} - Accuracy: {last_accuracy}")
 
-        # Predict after training          
+        # Predict after training
         Y_predicted_after_training = model.predict(X)
-        print("Accuracy with training:", calculate_accuracy(Y, Y_predicted_after_training))
+        print(f"Accuracy with training (batch: {batch_size}):", calculate_accuracy(
+            Y, Y_predicted_after_training))
+        
+        # Reinitialize X and Y for the next batch size
+        X = copied_X
+        Y = copied_Y
+        
+    # Plot the cost function for each iteration with different line styles/colors
+    for idx, batch_size in enumerate(batch_list):
+        plt.plot(range(epochs), losses[batch_size], label=f'Batch Size {batch_size}', linestyle=line_styles[idx])
 
-        # Plot the cost function for each iteration
-        plt.plot(range(epochs), losses)
-        plt.xlabel('Epoch')
-        plt.ylabel('Average Loss')
-        plt.title('Training Progress')
-        plt.show()
-    
+    plt.xlabel('Epoch')
+    plt.ylabel('Average Loss')
+    plt.title('Training Progress')
+    plt.legend()
+    plt.show()
+
     return None
 
     #########################################################################
