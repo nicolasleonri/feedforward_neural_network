@@ -74,36 +74,22 @@ def main():
 
     (4.5) See file "Figure_minibatch().png". In mini-batch gradient descent, the dataset 
     is divided into smaller batches (in this case, a batch size of 64). The model 
-    parameters are updated based on the average gradient computed from each batch. 
-    This approach combines some benefits of both stochastic gradient descent and 
-    batch gradient descent.
+    parameters are updated based on the average gradient computed from each batch. In SGD 
+    (batch size of 1), the model parameters are updated after processing each individual 
+    training example.
 
-    When compard to stochastic gradient descent, we get a smoother convergence. The 
-    averaging effect of the gradients from multiple examples in each batch helps reduce 
-    the noise inherent in stochastic updates. We can also notice a faster convergence. 
-    The Mini-batch gradient descent converges faster than batch gradient descent because 
-    it benefits from vectorized operations and parallel processing for the batch updates.
-    There is a also trade-off between the computational efficiency of mini-batch updates 
-    and the noise introduced by the stochastic updates.
-
-    In stochastic gradient descent (batch size of 1), the model parameters are updated 
-    after processing each individual training example. This approach introduces more 
-    noise into the parameter updates but can be computationally efficient, especially 
-    for large datasets. Its cost function plot is also noisier compared to the mini-batch 
-    gradient descent. Each update is based on a single example, leading to more fluctuation 
-    in the cost over iterations. However, it can converge faster because it updates the 
-    model parameters more frequently. However, this frequent updating can also introduce 
-    more variability and less stability.
-
-    Based on the observations, further hyperparameter tuning, including adjusting 
-    the learning rate and batch size, may be necessary to achieve optimal convergence, as
-    well as trying other optimization algorithms and calculating the F1 score.
+    In the SGD we get a smoother convergence. The averaging effect of the gradients from 
+    multiple examples in each batch helps reduce the noise inherent in stochastic updates. 
+    We can also notice a faster convergence. Its cost function plot is also less noisier 
+    compared to the mini-batch gradient descent. However, in the mini-batch gradient descent
+    we get a better accuracy (~0.715) than the SGD (~0.713).
 
     We should also consider how much computational time is needed in each case, in order to
     determine the more ecologically and economically efficient model. For example, both
     SGD and mini-batch models are more efficient than the regular training model (see point 
     4.2) as they converge faster. This implies that less resources are needed to train the
-    model and get to the desired plateau.
+    model and get to the desired plateau. As SGD converges faster than the mini-batch example,
+    it should be the most economically and ecogolically effective model.
     '''
 
     ##################################################################
